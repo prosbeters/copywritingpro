@@ -126,17 +126,60 @@
         };
 
         const formulas = [
-            { id: 'acc', name: 'ACC', fullName: 'Awareness, Comprehension, Conversion', icon: 'target', desc: 'Edukasi pasar baru.', strategyInfo: 'Membangun kesadaran merek, pemahaman mendalam, dan memicu konversi pembelian.' },
-            { id: '4cs', name: '4Cs', fullName: 'Clear, Concise, Compelling, Credible', icon: 'check', desc: 'To-the-point & Kredibel.', strategyInfo: 'Menyampaikan pesan jernih, ringkas, menarik, dan didukung bukti terpercaya.' },
-            { id: 'aida', name: 'AIDA', fullName: 'Attention, Interest, Desire, Action', icon: 'heart', desc: 'Psikologi klasik.', strategyInfo: 'Menarik perhatian, memicu minat, hasrat, dan akhirnya tindakan beli.' },
-            { id: 'pas', name: 'PAS', fullName: 'Problem, Agitate, Solution', icon: 'alert', desc: 'Mainkan rasa sakit.', strategyInfo: 'Menyorot penderitaan audiens, mempertajam efeknya, lalu menawarkan solusi.' },
-            { id: 'fab', name: 'FAB', fullName: 'Features, Advantage, Benefits', icon: 'box', desc: 'Fokus ke untung.', strategyInfo: 'Mengubah spesifikasi teknis menjadi keunggulan dan manfaat nyata konsumen.' },
-            { id: 'slap', name: 'SLAP', fullName: 'Stop, Look, Act, Purchase', icon: 'hand', desc: 'Agresif & Cepat.', strategyInfo: 'Taktik menghentikan scroll dan memaksa audiens bertindak seketika.' }
+            { 
+                id: 'acc', 
+                name: 'ACC', 
+                fullName: 'Awareness, Comprehension, Conversion', 
+                icon: 'target', 
+                desc: 'Edukasi pasar baru.',
+                strategyInfo: 'Membangun kesadaran merek, pemahaman mendalam, dan memicu konversi pembelian.'
+            },
+            { 
+                id: '4cs', 
+                name: '4Cs', 
+                fullName: 'Clear, Concise, Compelling, Credible', 
+                icon: 'check', 
+                desc: 'To-the-point & Kredibel.',
+                strategyInfo: 'Menyampaikan pesan jernih, ringkas, menarik, dan didukung bukti terpercaya.'
+            },
+            { 
+                id: 'aida', 
+                name: 'AIDA', 
+                fullName: 'Attention, Interest, Desire, Action', 
+                icon: 'heart', 
+                desc: 'Psikologi klasik.',
+                strategyInfo: 'Menarik perhatian, memicu minat, hasrat, dan akhirnya tindakan beli.'
+            },
+            { 
+                id: 'pas', 
+                name: 'PAS', 
+                fullName: 'Problem, Agitate, Solution', 
+                icon: 'alert', 
+                desc: 'Mainkan rasa sakit.',
+                strategyInfo: 'Menyorot penderitaan audiens, mempertajam efeknya, lalu menawarkan solusi.'
+            },
+            { 
+                id: 'fab', 
+                name: 'FAB', 
+                fullName: 'Features, Advantage, Benefits', 
+                icon: 'box', 
+                desc: 'Fokus ke untung.',
+                strategyInfo: 'Mengubah spesifikasi teknis menjadi keunggulan dan manfaat nyata konsumen.'
+            },
+            { 
+                id: 'slap', 
+                name: 'SLAP', 
+                fullName: 'Stop, Look, Act, Purchase', 
+                icon: 'hand', 
+                desc: 'Agresif & Cepat.',
+                strategyInfo: 'Taktik menghentikan scroll dan memaksa audiens bertindak seketika.'
+            }
         ];
 
         const FormInput = ({ label, name, value, onChange, placeholder, isTextArea = false, examples = [], className = "", info = "" }) => {
             const [showDropdown, setShowDropdown] = useState(false);
             const wrapperRef = useRef(null);
+
             useEffect(() => {
                 const handleClickOutside = (e) => { if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setShowDropdown(false); };
                 document.addEventListener("mousedown", handleClickOutside);
@@ -156,6 +199,7 @@
                             </div>
                         )}
                     </div>
+                    
                     <div className="relative">
                         {isTextArea ? (
                             <textarea name={name} value={value} onChange={onChange} placeholder={placeholder} className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-indigo-500 outline-none h-28 resize-none transition-all scrollbar-thin" />
@@ -193,6 +237,7 @@
                 const { getAuth, signInWithEmailAndPassword, getFirestore, doc, setDoc } = window.FirebaseSDK;
                 const auth = getAuth();
                 const db = getFirestore();
+
                 try {
                     const cred = await signInWithEmailAndPassword(auth, email, password);
                     const sid = crypto.randomUUID();
@@ -287,33 +332,13 @@
                 setIsGenerating(true);
                 try {
                     const formulaObj = formulas.find(f => f.id === selectedFormula);
-                    
-                    // --- SUNTIKAN PENGETAHUAN PRODUK (INTERNAL PROMPT) ---
                     const prompt = `
                         Role: Pakar Conversion Copywriter Berbasis Data & Otoritas.
-                        
-                        Instruksi Utama:
                         Anda WAJIB menyebutkan nama brand/produk "${formData.productName}" secara eksplisit.
-                        
-                        SUNTIKAN PENGETAHUAN:
-                        Manfaatkan basis pengetahuan luas Anda tentang kategori produk "${formData.productName}".
-                        Jika produk mengandung bahan spesifik (misal: Robusta Coffee, Niacinamide, Carbon Fiber, dsb), gunakan data teknis/fakta ilmiah/karakteristik asli bahan tersebut untuk memperkuat copywriting.
-                        Contoh: Jika Robusta, bahas kadar kafein yang tinggi atau rasa bold-nya. Jika Niacinamide, bahas cara kerjanya di sel kulit.
-                        
+                        SUNTIKAN PENGETAHUAN: Manfaatkan basis pengetahuan luas Anda tentang kategori produk "${formData.productName}". Gunakan data teknis/fakta ilmiah/karakteristik asli bahan tersebut (misal: Robusta, Niacinamide, dsb) untuk memperkuat copywriting.
                         Formula: ${formulaObj.fullName} (${formulaObj.desc}).
-                        
-                        Data Input Pengguna:
-                        - Nama Produk: ${formData.productName}
-                        - Audiens: ${formData.audience}
-                        - Tone: ${formData.tone}
-                        - Platform: ${formData.platform}
-                        - Masalah (Pain): ${formData.problem}
-                        - Solusi (Gain): ${formData.solution}
-                        - Penawaran: ${formData.offer}
-                        
+                        Data: ${JSON.stringify(formData)}.
                         Hasilkan 15 variasi copywriting "Super Daging" dalam Bahasa Indonesia yang berwibawa, emosional, dan berbasis fakta produk.
-                        Sertakan Smart Analysis psikologis singkat untuk setiap variasi.
-                        
                         Format Output WAJIB JSON array: [{"text": "...", "analysis": "..."}]
                     `;
 
@@ -339,19 +364,19 @@
             };
 
             const downloadWord = () => {
-                const content = `<html><body><h2>CopyGen Pro Result</h2>${results.map((item, i)=>`<div><h3>Varian #${i+1}</h3><p>${String(item.text)}</p><p><i>Analisis: ${String(item.analysis)}</i></p></div>`).join('')}</body></html>`;
+                const content = `<html><body><h2 style="text-align:center">CopyGen Pro Result</h2>${results.map((item, i)=>`<div><h3>Varian #${i+1}</h3><p>${String(item.text)}</p><p><i>Analisis: ${String(item.analysis)}</i></p></div>`).join('')}</body></html>`;
                 const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a'); 
                 link.href = url; link.download = `CopyGen_Result_${formData.productName || 'Export'}.doc`; link.click();
             };
 
-            if (loading) return <div className="min-h-screen bg-[#0F0F12] flex items-center justify-center text-white uppercase tracking-widest text-xs">Initializing...</div>;
+            if (loading) return <div className="min-h-screen bg-[#0F0F12] flex items-center justify-center text-white uppercase tracking-widest text-xs">Initializing Secure Environment...</div>;
             if (!user) return <LoginPage />;
             if (conflict) return (
                 <div className="min-h-screen bg-[#0F0F12] flex items-center justify-center p-6 text-center text-white">
                     <BackgroundEffects />
-                    <div className="glass-panel p-10 rounded-3xl max-w-sm border-red-500/20 shadow-2xl relative z-10 animate-fade-in text-white">
+                    <div className="glass-panel p-10 rounded-3xl max-w-sm border-red-500/20 shadow-2xl relative z-10 animate-fade-in">
                         <Icon name="monitorOff" className="w-14 h-14 text-red-500 mx-auto mb-6" />
                         <h2 className="text-2xl font-bold mb-4 uppercase">Sesi Terputus</h2>
                         <p className="text-gray-400 mb-8 leading-relaxed text-sm">Akun ini aktif di perangkat lain. 1 ID hanya untuk 1 perangkat aktif.</p>
@@ -368,7 +393,7 @@
                             <Icon name="crown" className="text-indigo-400 w-6 h-6" />
                             <div><h1 className="text-xl font-bold tracking-tight font-serif italic text-white">CopyGen Pro</h1><p className="text-[9px] text-gray-500 hidden sm:block uppercase tracking-wider text-white">Mempermudah pekerjaan Anda, Smart, Fokus, Efisien</p></div>
                         </div>
-                        <button onClick={logout} className="text-[10px] font-bold text-gray-400 flex items-center gap-2 hover:text-white transition-colors bg-white/5 px-4 py-2 rounded-lg uppercase tracking-widest border border-white/5"><Icon name="logout" className="w-3.5 h-3.5" /> Log Out</button>
+                        <button onClick={logout} className="text-[10px] font-bold text-gray-400 flex items-center gap-2 hover:text-white transition-colors bg-white/5 px-4 py-2 rounded-lg uppercase tracking-widest border border-white/5 text-white"><Icon name="logout" className="w-3.5 h-3.5" /> Log Out</button>
                     </nav>
 
                     <main className="relative z-10 max-w-7xl mx-auto p-4 md:p-8 pt-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -411,13 +436,13 @@
                                 <div className="space-y-4 pt-4 border-t border-white/5">
                                     <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2 font-serif italic"><Icon name="box" className="w-4 h-4 text-indigo-400" /> Tahap 2: Input Penting</h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <FormInput label="Nama Produk" name="productName" value={formData.productName} onChange={handleInputChange} placeholder="Contoh: Kopi Robusta Lampung" className="md:col-span-2" info="Tuliskan nama produk atau brand dengan jelas agar AI bisa mengenali karakteristik dasarnya." />
-                                        <FormInput label="Target Audiens" name="audience" value={formData.audience} onChange={handleInputChange} placeholder="Pekerja Kantoran" examples={exampleOptions.audience} info="Semakin spesifik target Anda, semakin tajam argumen psikologis yang diberikan AI." />
-                                        <FormInput label="Gaya Bahasa" name="tone" value={formData.tone} onChange={handleInputChange} placeholder="Santai" examples={exampleOptions.tone} info="Pilih nuansa tulisan yang paling mencerminkan kepribadian brand Anda." />
-                                        <div className="md:col-span-2"><FormInput label="Platform / Media" name="platform" value={formData.platform} onChange={handleInputChange} placeholder="Instagram Ads" examples={exampleOptions.platform} info="Media tayang sangat menentukan format tulisan (panjang/pendek/hasthtag)." /></div>
-                                        <div className="md:col-span-2"><FormInput label="Masalah (Pain)" name="problem" value={formData.problem} onChange={handleInputChange} isTextArea placeholder="Apa keresahan audiens Anda?" info="Jelaskan titik sakit emosional yang dirasakan audiens Anda saat ini." /></div>
-                                        <div className="md:col-span-2"><FormInput label="Solusi (Gain)" name="solution" value={formData.solution} onChange={handleInputChange} isTextArea placeholder="Bagaimana produk ini menyembuhkan masalah di atas?" info="Tuliskan manfaat utama. AI akan menghubungkannya dengan fakta teknis produk." /></div>
-                                        <div className="md:col-span-2"><FormInput label="Penawaran & Bukti" name="offer" value={formData.offer} onChange={handleInputChange} isTextArea placeholder="Promo? Testimoni? Alasan beli sekarang?" info="Bagian untuk meyakinkan pembeli dengan bukti dan urgensi." /></div>
+                                        <FormInput label="Nama Produk" name="productName" value={formData.productName} onChange={handleInputChange} placeholder="Kopi Kenangan" className="md:col-span-2" info="Nama produk atau brand yang ingin dipasarkan. AI wajib menyebutkan nama ini di hasil generate." />
+                                        <FormInput label="Target Audiens" name="audience" value={formData.audience} onChange={handleInputChange} placeholder="Pekerja Kantoran" examples={exampleOptions.audience} info="Siapa target spesifik yang ingin Anda sasar? Semakin spesifik audiensnya, semakin tajam copywriting Anda." />
+                                        <FormInput label="Gaya Bahasa" name="tone" value={formData.tone} onChange={handleInputChange} placeholder="Santai" examples={exampleOptions.tone} info="Nuansa emosional tulisan. Pilih gaya yang paling cocok dengan kepribadian brand Anda." />
+                                        <div className="md:col-span-2"><FormInput label="Platform / Media" name="platform" value={formData.platform} onChange={handleInputChange} placeholder="Instagram Ads" examples={exampleOptions.platform} info="Media tempat copywriting ini akan ditayangkan agar formatnya disesuaikan oleh AI." /></div>
+                                        <div className="md:col-span-2"><FormInput label="Masalah (Pain)" name="problem" value={formData.problem} onChange={handleInputChange} isTextArea placeholder="Apa keresahan audiens Anda?" info="Jelaskan titik sakit emosional audiens." /></div>
+                                        <div className="md:col-span-2"><FormInput label="Solusi (Gain)" name="solution" value={formData.solution} onChange={handleInputChange} isTextArea placeholder="Bagaimana produk Anda menyembuhkan masalah di atas?" info="Tunjukkan bagaimana produk Anda menjadi pahlawan." /></div>
+                                        <div className="md:col-span-2"><FormInput label="Penawaran & Bukti" name="offer" value={formData.offer} onChange={handleInputChange} isTextArea placeholder="Diskon? Bonus? Testimoni?" info="Meyakinkan pembeli dengan kredibilitas." /></div>
                                     </div>
                                     <button onClick={generate} disabled={!selectedFormula || isGenerating || !apiKey} className={`w-full py-4 rounded-xl font-bold mt-4 shadow-xl uppercase text-[10px] tracking-[0.3em] transition-all flex items-center justify-center gap-3 ${!selectedFormula || !apiKey ? 'bg-gray-800 text-gray-500 opacity-50 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-500 text-white active:scale-95'}`}>
                                         {isGenerating ? <Icon name="loader" className="animate-spin w-4 h-4" /> : <Icon name="zap" className="w-4 h-4" />}
@@ -445,11 +470,11 @@
                                                 <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity"><Icon name="zap" className="w-20 h-20" /></div>
                                                 <div className="absolute top-6 right-8 text-[9px] font-bold text-gray-600 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/5">Option {i+1}</div>
                                                 <p className="text-gray-200 text-lg leading-relaxed mb-8 font-light pr-10 whitespace-pre-wrap">{String(item.text)}</p>
-                                                <div className="bg-black/40 rounded-2xl p-5 border border-white/10 relative text-white">
+                                                <div className="bg-black/40 rounded-2xl p-5 border border-white/10 relative">
                                                     <div className="absolute -top-3 left-6 bg-[#0F0F12] px-3 py-1 rounded-full border border-white/10 flex items-center gap-2 text-white"><Icon name="lightbulb" className="w-3 h-3 text-amber-500" /><span className="text-[9px] text-amber-500 font-bold uppercase tracking-widest">Smart Analysis</span></div>
                                                     <p className="text-gray-400 text-xs text-justify font-light leading-relaxed text-white">{String(item.analysis)}</p>
                                                 </div>
-                                                <div className="mt-8 flex justify-end opacity-0 group-hover:opacity-100 transition-all text-white">
+                                                <div className="mt-8 flex justify-end opacity-0 group-hover:opacity-100 transition-all">
                                                     <button 
                                                         onClick={() => handleCopy(String(item.text), i)} 
                                                         className={`text-[10px] font-bold flex items-center gap-2 px-6 py-2.5 rounded-xl shadow-md uppercase tracking-widest transition-all ${copiedIdx === i ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-indigo-600 text-white hover:bg-indigo-500 border border-white/5'}`}
@@ -468,8 +493,8 @@
             );
         };
 
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(<App />);
-        </script>
-    </body>
-    </html>
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
